@@ -5,13 +5,12 @@ import ma.emsi.billingservice.repository.BillRepository;
 import ma.emsi.billingservice.repository.ProductItemRepository;
 import ma.emsi.billingservice.services.CustomerRestClient;
 import ma.emsi.billingservice.services.ProductRestClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@RequestMapping("/bill")
 public class BillRestController {
     private BillRepository billRepository;
     private ProductItemRepository productItemRepository;
@@ -24,7 +23,19 @@ public class BillRestController {
         this.customerRestClient = customerRestClient;
         this.productRestClient = productRestClient;
     }
-    @GetMapping("/fullBill/{id}")
+
+    @GetMapping("/all")
+    public List<Bill> bills(){
+        List<Bill> bills= billRepository.findAll();
+        bills.forEach(bill -> {
+        bill.setCustomer(customerRestClient.findCustomerById(bill.getCustomerId()));
+        bill.getProductItems().forEach(pi ->{
+            pi.setProduct(productRestClient.findProductById(pi.getProductId()));
+        });
+        });
+        return bills;
+    }
+    @GetMapping("/{id}")
     public Bill bill(@PathVariable Long id){
        Bill bill=  billRepository.findById(id).get();
        bill.setCustomer(customerRestClient.findCustomerById(bill.getCustomerId()));
@@ -32,5 +43,14 @@ public class BillRestController {
            pi.setProduct(productRestClient.findProductById(pi.getProductId()));
        });
         return bill;
+    }
+    @GetMapping("/byCustomerId/{id}")
+    public List<Bill> getBillsByCustomerId(@PathVariable Long id) {
+        List<Bill> bills = billRepository.findByCustomerId(id);
+        bills.forEach(bill -> {
+            bill.setCustomer(customerRestClient.findCustomerById(bill.getCustomerId()));
+            bill.getProductItems().forEach(p -> p.setProduct(productRestClient.findProductById(p.getProductId())));
+        });
+        return bills;
     }
 }

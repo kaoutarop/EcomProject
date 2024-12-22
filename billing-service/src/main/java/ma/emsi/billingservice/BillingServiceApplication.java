@@ -32,13 +32,14 @@ public class BillingServiceApplication {
                             CustomerRestClient customerRestClient ,
                             ProductRestClient productRestClient){
         return args -> {
-            Collection<Product> products = productRestClient.allProducts().getContent();
+            Collection<Product> products = productRestClient.getAllProducts().getContent();
             Long customerId=1L;
             Customer customer = customerRestClient.findCustomerById(customerId);
             if(customer==null) throw new RuntimeException("Customer not found");
             Bill bill = new Bill();
             bill.setBillDate(new Date());
             bill.setCustomerId(customerId);
+            bill.setCustomer(customer);
             Bill savedBill = billRepository.save(bill);
             products.forEach(product ->{
                 ProductItem  productitem=new ProductItem();
