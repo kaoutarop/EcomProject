@@ -27,7 +27,7 @@ public class CustomerServiceApplication {
           customerRepository.saveAll(
                   List.of(
                           Customer.builder().name("hassan").email("hassan@emsi.ma").build(),
-                          Customer.builder().name("jalal").email("jalal@emsi.ma").build(),
+                          Customer.builder().name("kaoutar").email("kaoutar@emsi.ma").build(),
                           Customer.builder().name("aymane").email("aymane@emsi.ma").build()
                   )
           );
